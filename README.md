@@ -11,3 +11,5 @@ helm repo add mariadb-operator https://helm.mariadb.com/mariadb-operator
 helm install mariadb-operator-crds mariadb-operator/mariadb-operator-crds
 helm install mariadb-operator mariadb-operator/mariadb-operator   --set metrics.enabled=true --set webhook.cert.certManager.enabled=true
 ```
+
+You will need to bring your own secrets as the onces that I have stored in dbusers-secret.yaml and mariadb-secret-sealed.yaml are encrypted with sealed secrets.
