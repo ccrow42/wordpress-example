@@ -1,0 +1,63 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: wp-amoc-admin
+  namespace: wordpress
+  annotations:
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/whitelist-source-range: "10.0.0.0/8,131.191.104.138/32"
+    cert-manager.io/cluster-issuer: letsencrypt-prod-dns01
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts:
+        - www.ccrow.org
+      secretName: ccrow-tls
+  rules:
+    - host: www.ccrow.org
+      http:
+        paths:
+          - path: /wp-admin
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: wp-amoc
+                port:
+                  number: 80
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: wp-amoc-site
+  namespace: wordpress
+  annotations:
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    cert-manager.io/cluster-issuer: letsencrypt-prod-dns01
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts:
+        - www.ccrow.org
+        - ccrow.org
+      secretName: ccrow-tls
+  rules:
+    - host: www.ccrow.org
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: wp-amoc
+                port:
+                  number: 80
+    - host: ccrow.org
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: wp-amoc
+                port:
+                  number: 80
